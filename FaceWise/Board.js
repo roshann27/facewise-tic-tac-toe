@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import './App.css';
+import './game.css';
 
 const initialBoard = Array(9).fill(null);
 
