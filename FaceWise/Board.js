@@ -1,55 +1,53 @@
-
 import React, { useState } from 'react';
-import './game.css';
+import Square from './Square';
 
-const initialBoard = Array(9).fill(null);
+const Board = () => {
+  const [squares, setSquares] = useState(Array(9).fill(null));
+  const [xIsNext, setXIsNext] = useState(true);
 
-function App() {
-  const [board, setBoard] = useState(initialBoard);
-  const [isXNext, setIsXNext] = useState(true);
-  const [winner, setWinner] = useState(null);
-
-  const handleClick = (index) => {
-    if (winner || board[index]) return;
-
-    const newBoard = board.slice();
-    newBoard[index] = isXNext ? 'X' : '✓';
-    setBoard(newBoard);
-    setIsXNext(!isXNext);
-
-    const newWinner = calculateWinner(newBoard);
-    if (newWinner) {
-      setWinner(newWinner);
-    }
+  const handleClick = (i) => {
+    const squaresCopy = [...squares];
+    if (calculateWinner(squares) || squares[i]) return;
+    squaresCopy[i] = xIsNext ? 'X' : 'O';
+    setSquares(squaresCopy);
+    setXIsNext(!xIsNext);
   };
 
-  const handleReset = () => {
-    setBoard(initialBoard);
-    setIsXNext(true);
-    setWinner(null);
+  const renderSquare = (i) => {
+    return <Square value={squares[i]} onClick={() => handleClick(i)} />;
   };
+
+  const winner = calculateWinner(squares);
+  let status;
+  if (winner) {
+    status = `Winner: ${winner}`;
+  } else {
+    status = `Next player: ${xIsNext ? 'X' : 'O'}`;
+  }
 
   return (
-    <div className="game">
-      <h1>Tic Tac Toe</h1>
-      <div className="board">
-        {board.map((value, index) => (
-          <div 
-            key={index} 
-            className="circle" 
-            onClick={() => handleClick(index)}
-          >
-            {value}
-          </div>
-        ))}
+    <div>
+      <div className="status">{status}</div>
+      <div className="board-row">
+        {renderSquare(0)}
+        {renderSquare(1)}
+        {renderSquare(2)}
       </div>
-      {winner && <p className="winner">Winner: {winner}</p>}
-      <button className="reset-button" onClick={handleReset}>Reset</button>
+      <div className="board-row">
+        {renderSquare(3)}
+        {renderSquare(4)}
+        {renderSquare(5)}
+      </div>
+      <div className="board-row">
+        {renderSquare(6)}
+        {renderSquare(7)}
+        {renderSquare(8)}
+      </div>
     </div>
   );
-}
+};
 
-const calculateWinner = (board) => {
+const calculateWinner = (squares) => {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -58,17 +56,15 @@ const calculateWinner = (board) => {
     [1, 4, 7],
     [2, 5, 8],
     [0, 4, 8],
-    [2, 4, 6]
+    [2, 4, 6],
   ];
-
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
-    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-      return board[a];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
     }
   }
-
-  return board.every(cell => cell) ? 'Tie match' : null;
+  return null;
 };
 
-export default App;
+export default Board;
